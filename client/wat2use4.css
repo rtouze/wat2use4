@@ -1,0 +1,81 @@
+/* Main stylesheet for wat2use4*/
+
+html {
+  height: 100%;
+}
+
+body {
+  font-size: 1em;
+  margin: 0;
+  font-family: sans-serif;
+}
+
+h1 {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-style: italic;
+}
+
+span.title_emphasis {
+  color: blue;
+  position: relative;
+  left: -0.2em;
+  top: +0.2em;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+div#main_placeholder {
+  width: 40%;
+  margin: auto;
+}
+
+/* Question styles */
+
+div#question {
+  border: 1px grey solid;
+  height: 10em;
+  width: 100%;
+  color: grey;
+  padding: 0.3em;
+}
+
+div#question.edit_mode {
+  color: black;
+}
+
+div#question.posted {
+  /* TEMP */
+  font-style: italic;
+}
+
+div#results {
+  float: right;
+  border: 1px grey solid;
+  padding: 1em;
+  margin-right: 2%;
+  width: 20%;
+  height: 10em;
+}
+
+div#results h1 {
+  font-size: 1em;
+}
+
+/* Advice Styles */
+
+div#advice_placeholder {
+  margin-top: 1.5em;
+  display: none;
+}
+
+div#advice {
+  border: 1px grey solid;
+  padding: 0.3em;
+  width: 100%;
+}
+
+
+
