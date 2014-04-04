@@ -29,6 +29,7 @@ $(function () {
         var $advice = $('div#advice'),
         content = $advice.html().trim(),
         result,
+        // We can put  a datetime on it...
         $pushed_advice = $('<div class="tl_advice">');
 
         $pushed_advice.html(content);
