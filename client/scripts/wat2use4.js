@@ -26,8 +26,8 @@ $(function () {
     });
 
     $('button#advice_submit').click(function () {
-        var $advice = $('div#advice'),
-        content = $advice.html().trim(),
+        var $advice = $('input#advice'),
+        content = $advice.val().trim(),
         result,
         // We can put  a datetime on it...
         $pushed_advice = $('<div class="tl_advice">');
@@ -37,7 +37,14 @@ $(function () {
 
         // TODO : regarder comment recuperer tous les groupes (la on ne
         // recupere que l'index, c'est useless
-        var result = content.search(/#(\S+)(\s|$)/);
-        console.debug('Result : ' + result);
+        var result = content.match(/#(\S+)(\s|$|\.)/g);
+        if (result !== null) {
+            var adaptedResult = result.map(
+                    function (item) { return item.trim().replace(/(\s|\.)/g, ''); }
+                    );
+            console.debug('AdaptedResult : ' + adaptedResult);
+        } else {
+            console.debug('rien');
+        }
     });
 });

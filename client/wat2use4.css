@@ -68,10 +68,10 @@ div#results h1 {
 
 div#advice_placeholder {
   margin-top: 1.5em;
-  display: none;
+  display: inherit;
 }
 
-div#advice {
+input#advice {
   border: 1px grey solid;
   padding: 0.3em;
   width: 100%;
