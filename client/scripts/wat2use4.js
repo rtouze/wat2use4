@@ -6,10 +6,8 @@
 
 $(function () {
     'use strict';
-    console.debug('GO DEBUG GO GO');
-    var question_default = $('#question').html().trim();
-
-    var stats = {};
+    var question_default = $('#question').html().trim(),
+        stats = {};
 
     $('#question').click(function() {
         $(this).addClass('edit_mode');
@@ -38,13 +36,36 @@ $(function () {
         // TODO : regarder comment recuperer tous les groupes (la on ne
         // recupere que l'index, c'est useless
         var result = content.match(/#(\S+)(\s|$|\.)/g);
+        // STOP: needs testing
         if (result !== null) {
             var adaptedResult = result.map(
-                    function (item) { return item.trim().replace(/(\s|\.)/g, ''); }
+                    function (item) { return item.trim().replace(/(^#|\s|\.)/g, ''); }
                     );
-            console.debug('AdaptedResult : ' + adaptedResult);
+            var i = 0;
+            var currentResult;
+            for (i = 0; i < adaptedResult.length; i++) {
+                currentResult = adaptedResult[i];
+                if (stats[currentResult] === undefined) {
+                    stats[currentResult] = 0
+                }
+                stats[currentResult] += 1;
+                refreshStatsPlaceHolder();
+            }
         } else {
-            console.debug('rien');
         }
     });
+
+    var refreshStatsPlaceHolder = function () {
+        'use strict';
+        // TODO: write sorted list
+        var $placeHolder = $('div#result_place_holder'),
+            $resultList = $('<ul>'),
+            $currentAdviceElement;
+        for (advice in stats) {
+            $resultList.append(
+                    $('<li>' + advice + ': ' + stats[advice] + '</li>')
+                    );
+        }
+        $placeHolder.empty().append($resultList);
+    };
 });
