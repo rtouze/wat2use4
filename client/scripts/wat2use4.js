@@ -7,7 +7,9 @@
 $(function () {
     'use strict';
     var question_default = $('#question').html().trim(),
-        stats = {};
+        stats = {},
+        vote_count = 0,
+        advice_list = [];
 
     $('#question').click(function() {
         $(this).addClass('edit_mode');
@@ -31,7 +33,13 @@ $(function () {
         $pushed_advice = $('<div class="tl_advice">');
 
         $pushed_advice.html(content);
-        $('div#timeline').append($pushed_advice);
+        advice_list.reverse();
+        advice_list.push($pushed_advice);
+        advice_list.reverse();
+        if (advice_list.length > 10) {
+            advice_list.pop();
+        }
+        render_timeline();
 
         // TODO : regarder comment recuperer tous les groupes (la on ne
         // recupere que l'index, c'est useless
@@ -49,22 +57,37 @@ $(function () {
                     stats[currentResult] = 0
                 }
                 stats[currentResult] += 1;
+                vote_count += 1;
                 refreshStatsPlaceHolder();
             }
         } else {
         }
     });
 
+    var render_timeline = function () {
+        $('div#timeline').empty();
+        for (var i = 0; i < advice_list.length; i++) {
+            $('div#timeline').append(advice_list[i]);
+        }
+    };
+
     var refreshStatsPlaceHolder = function () {
         'use strict';
         // TODO: write sorted list
         var $placeHolder = $('div#result_place_holder'),
             $resultList = $('<ul>'),
-            $currentAdviceElement;
+            $currentAdviceElement,
+            size, min_size, calculated_size;
+        console.debug('vote_count = ' + vote_count)
+            min_size = 0.8;
+
         for (advice in stats) {
-            $resultList.append(
-                    $('<li>' + advice + ': ' + stats[advice] + '</li>')
-                    );
+            calculated_size = Number(stats[advice])*2.5/vote_count
+            size =  calculated_size < min_size ? min_size : calculated_size;
+            console.debug('Size ' + size)
+            $currentAdviceElement = $('<li>' + advice + ': ' + stats[advice] + '</li>');
+            $currentAdviceElement.css('font-size', size + 'em')
+            $resultList.append($currentAdviceElement);
         }
         $placeHolder.empty().append($resultList);
     };
