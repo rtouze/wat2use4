@@ -32,7 +32,7 @@ $(function () {
         // We can put  a datetime on it...
         $pushed_advice = $('<div class="tl_advice">');
 
-        $pushed_advice.html(content);
+        $pushed_advice.html((new Date()).toISOString() + ' - ' + content);
         advice_list.reverse();
         advice_list.push($pushed_advice);
         advice_list.reverse();

@@ -85,5 +85,9 @@ div.tl_advice {
   padding: 0.3em;
 }
 
+ul {
+    list-style-type: none;
+}
+
 
 
