@@ -1,5 +1,5 @@
 /* Javascript for w2u4 client side. 
- * Dependances :
+ * Dependancies :
  *  Jquery 2
  *  socket.io
  * */
@@ -25,12 +25,18 @@ $(function () {
         }
     });
 
+    $('div#advice').on('focus', function (event) {
+        var initial_content = 'Type your advice here...';
+        if (event.target.textContent.trim() === initial_content) {
+            event.target.textContent = '';
+        }
+    });
+
     $('button#advice_submit').click(function () {
-        var $advice = $('input#advice'),
-        content = $advice.val().trim(),
-        result,
-        // We can put  a datetime on it...
+        var advice, content, result, $pushed_advice;
         $pushed_advice = $('<div class="tl_advice">');
+        advice  = document.querySelector('div#advice');
+        content = advice.textContent.trim();
 
         $pushed_advice.html((new Date()).toISOString() + ' - ' + content);
         advice_list.reverse();
@@ -60,8 +66,7 @@ $(function () {
                 vote_count += 1;
                 refreshStatsPlaceHolder();
             }
-        } else {
-        }
+        } 
     });
 
     var render_timeline = function () {
