@@ -4,18 +4,28 @@
     <title><%= title %></title>
     <meta charset="utf-8" />
     <link rel="stylesheet" type="text/css"  href="wat2use4.css" />
-    <script type="text/javascript" src=""></script>
+    <script type="text/javascript" src="scripts/index.js"></script>
   </head>
   <body>
-    <p>
-    Hello you! Welcome to Wat2Use4. It allows you to ask a question on what to
-    use for whatever you want.
-    </p>
-    <p>
-    You may start by asking your question right bellow:
-    </p>
-    <div contenteditable="true">
-      What2Use4...?
+    <h1>
+      Wat<span class="title_emphasis">2</span><br />
+      Use<span class="title_emphasis">4</span>
+    </h1>
+    <div id="main_placeholder">
+      <p>
+      Hello you! Welcome to Wat2Use4. It allows you to ask a question on what to
+      use for whatever you want.
+      </p>
+      <p>
+      You may start by asking your question right bellow:
+      </p>
+      <div contenteditable="true" id="question">
+        What2Use4...?
+      </div>
+      <div id="question_submit" class="button">
+        Submit
+      </div>
+      <div id="result"></div>
     </div>
   </body>
 </html>

@@ -32,7 +32,7 @@ $(function () {
         }
     });
 
-    $('button#advice_submit').click(function () {
+    $('div#advice_submit').click(function () {
         var advice, content, result, $pushed_advice;
         $pushed_advice = $('<div class="tl_advice">');
         advice  = document.querySelector('div#advice');
@@ -53,7 +53,7 @@ $(function () {
         // STOP: needs testing
         if (result !== null) {
             var adaptedResult = result.map(
-                    function (item) { return item.trim().replace(/(^#|\s|\.)/g, ''); }
+                    function (item) { return item.trim().replace(/(^#|\s|\.)/g, '').toLowerCase(); }
                     );
             var i = 0;
             var currentResult;
@@ -67,6 +67,29 @@ $(function () {
                 refreshStatsPlaceHolder();
             }
         } 
+
+        var pollId = Number(window.location.pathname.substr(1));
+        if (pollId !== NaN) {
+            var pollChange = {id: pollId, timeline: advice_list, results: stats};
+            var xhr = new XMLHttpRequest();
+            var data = JSON.stringify(pollChange);
+            xhr.open('POST', '/poll_submit', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader("Content-length", data.length);
+            console.debug('XHR OK');
+            //TODO : fix JSON
+            //xhr.send(JSON.stringify(data));
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 400) {
+                    console.info('Data send to server');
+                }
+            }
+        }
+
+        // and save
+        // TODO :
+        // * get poll_id
+        // * get poll_question
     });
 
     var render_timeline = function () {
