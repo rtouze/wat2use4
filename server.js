@@ -22,7 +22,8 @@ app.post('/poll_submit', function (req, res) {
         id: -1,
         question: req.param('question'),
         timeline: [],
-        results: {}
+        results: {},
+        voteCount: 0
     };
 
     pollRepo.save(poll);
@@ -32,7 +33,6 @@ app.post('/poll_submit', function (req, res) {
 
 app.get('/:pollId', function (req, rep) {
     'use strict';
-    console.log('on est dans le get pollId');
     var pid = Number(req.params.pollId);
     var poll = pollRepo.getById(pid);
     // TODO : what if no poll ?
@@ -41,6 +41,24 @@ app.get('/:pollId', function (req, rep) {
     } else {
         rep.send('Poll ' + req.params.pollId + ' not found.');
     }
+});
+
+app.get('/:pollId/refresh', function (req, rep) {
+    'use strict';
+    var pid = Number(req.params.pollId);
+    var poll = pollRepo.getById(pid);
+    // TODO : handle poll undefined
+    rep.send(JSON.stringify(poll));
+});
+
+app.post('/:pollId/update', function (req, rep) {
+    console.log('on est dans post sur le poll/update')
+    console.log(req.param('poll'));
+    var poll = req.param('poll');
+    console.log('poll ' + JSON.stringify(poll));
+    pollRepo.save(poll);
+    rep.send('OK');
+    // or a fat nasty exception but OSEF for now...
 });
 
 var server = app.listen(3000, function () {

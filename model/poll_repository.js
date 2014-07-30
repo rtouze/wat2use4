@@ -5,11 +5,20 @@ var cache = {};
 var current_key = 1;
 
 exports.save = function (poll) {
-    poll.id = current_key;
-    cache[current_key] = poll;
-    current_key += 1;
+    if (poll.id < 0) {
+        poll.id = current_key;
+        current_key += 1;
+    }
+    cache[poll.id] = poll;
 };
 
 exports.getById = function (id) {
-    return cache[id];
+    temp = cache[id];
+    return {
+        id: temp.id,
+        results: temp.results || {},
+        timeline: temp.timeline || [],
+        voteCount: temp.voteCount || 0,
+        question: temp.question || 'Undifined question'
+    };
 };

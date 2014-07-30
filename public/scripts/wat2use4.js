@@ -9,21 +9,36 @@ $(function () {
     var question_default = $('#question').html().trim(),
         stats = {},
         vote_count = 0,
-        advice_list = [];
+        advice_list = [],
+        question;
 
-    $('#question').click(function() {
-        $(this).addClass('edit_mode');
-    });
-
-    $('#question_submit').click(function () {
-        // TODO : remove css class edit_mode
-        var $question = $('#question');
-        if ($question.html().trim() !== question_default) {
-            $question.attr('contenteditable', 'false').addClass('posted');
-            $(this).hide();
-            $('#advice_placeholder').show();
+    var pullData = function () {
+        var pollId = Number(window.location.pathname.substr(1));
+        var  xhr = new XMLHttpRequest();
+        var resp;
+        xhr.open('GET', '/' + pollId +  '/refresh');
+        xhr.send();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                resp = xhr.responseText;
+                console.debug("RESP = " + resp);
+                initPage(JSON.parse(resp));
+            }
         }
-    });
+    }();
+
+    var initPage = function (poll) {
+        stats = {},
+        vote_count = 0,
+        advice_list = [];
+        stats = poll.results;
+        advice_list = poll.timeline;
+        vote_count = poll.voteCount;
+        question = poll.question;
+        $('#question').html(question);
+        refreshStatsPlaceHolder(stats);
+        render_timeline(advice_list);
+    }
 
     $('div#advice').on('focus', function (event) {
         var initial_content = 'Type your advice here...';
@@ -33,24 +48,20 @@ $(function () {
     });
 
     $('div#advice_submit').click(function () {
-        var advice, content, result, $pushed_advice;
-        $pushed_advice = $('<div class="tl_advice">');
-        advice  = document.querySelector('div#advice');
-        content = advice.textContent.trim();
-
-        $pushed_advice.html((new Date()).toISOString() + ' - ' + content);
+        var advice, content, result, adviceDiv;
+        adviceDiv  = document.querySelector('div#advice');
+        content = adviceDiv.textContent.trim();
         advice_list.reverse();
-        advice_list.push($pushed_advice);
+        advice_list.push((new Date()).toISOString() + ' - ' + content);
         advice_list.reverse();
         if (advice_list.length > 10) {
             advice_list.pop();
         }
-        render_timeline();
+        render_timeline(advice_list);
 
-        // TODO : regarder comment recuperer tous les groupes (la on ne
-        // recupere que l'index, c'est useless
-        var result = content.match(/#(\S+)(\s|$|\.)/g);
+        result = content.match(/#(\S+)(\s|$|\.)/g);
         // STOP: needs testing
+        // TODO error JQuery somewhere
         if (result !== null) {
             var adaptedResult = result.map(
                     function (item) { return item.trim().replace(/(^#|\s|\.)/g, '').toLowerCase(); }
@@ -64,42 +75,41 @@ $(function () {
                 }
                 stats[currentResult] += 1;
                 vote_count += 1;
-                refreshStatsPlaceHolder();
+                refreshStatsPlaceHolder(stats);
             }
         } 
 
         var pollId = Number(window.location.pathname.substr(1));
         if (pollId !== NaN) {
-            var pollChange = {id: pollId, timeline: advice_list, results: stats};
+            var pollChange = {id: pollId,
+                timeline: advice_list,
+                results: stats,
+                voteCount: vote_count,
+                question: question};
             var xhr = new XMLHttpRequest();
-            var data = JSON.stringify(pollChange);
-            xhr.open('POST', '/poll_submit', true);
+            var data = {'poll': pollChange};
+            xhr.open('POST', '/' + pollId + '/update', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.setRequestHeader("Content-length", data.length);
-            console.debug('XHR OK');
-            //TODO : fix JSON
-            //xhr.send(JSON.stringify(data));
+            xhr.send(JSON.stringify(data));
             xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 400) {
+                if (xhr.readyState === 4 && xhr.status === 200) {
                     console.info('Data send to server');
                 }
             }
         }
-
-        // and save
-        // TODO :
-        // * get poll_id
-        // * get poll_question
     });
 
-    var render_timeline = function () {
+    var render_timeline = function (timelineee) {
         $('div#timeline').empty();
-        for (var i = 0; i < advice_list.length; i++) {
-            $('div#timeline').append(advice_list[i]);
+        for (var i = 0; i < timelineee.length; i++) {
+            var $pushed_advice = $('<div class="tl_advice">');
+            $pushed_advice.html(timelineee[i].replace(/#(\S+)(\s|$|\.)/g, '<em>$&</em>'));
+            $('div#timeline').append($pushed_advice);
         }
     };
 
-    var refreshStatsPlaceHolder = function () {
+    var refreshStatsPlaceHolder = function (stats) {
         'use strict';
         // TODO: write sorted list
         var $placeHolder = $('div#result_place_holder'),
@@ -119,4 +129,6 @@ $(function () {
         }
         $placeHolder.empty().append($resultList);
     };
+
 });
+
