@@ -30,15 +30,14 @@ app.post('/poll_submit', function (req, res) {
     };
 
 
-    /*
     pollRepo.save(poll, function (savedPoll) {
         res.send(savedPoll._id.toHexString());
         
     })
 
-    */
     
 
+    /*
     mongoClient.connect("mongodb://localhost:27017/db", function(err, db) {
         if(err) { return console.log(err); }
         var collection = db.collection('wat2use4');
@@ -52,33 +51,27 @@ app.post('/poll_submit', function (req, res) {
             res.send(poll._id.toHexString());
         });
     });
+    */
 });
 
 app.get('/:pollId', function (req, rep) {
     'use strict';
     console.log("on demande le poll " + req.params.pollId);
-    // A partir de la, toute cette merde ne marche pas...
-    mongoClient.connect("mongodb://localhost:27017/db", function(err, db) {
-        if(err) { return console.log(err); }
-        var collection = db.collection('wat2use4');
-        var oid = ObjectID.createFromHexString(req.params.pollId);
-        console.log("objectID = " + oid);
-        collection.findOne({_id: oid}, function (err, result) {
-            if(err) { 
-                rep.send('Poll ' + req.params.pollId + ' not found.');
-            }
-            console.log("Result ? " + result);
-            rep.render('wat2use4', {poll: result});
-        });
+    var pid = req.params.pollId;
+    pollRepo.getById(pid, function (result) {
+        rep.render('wat2use4', {poll: result});
+        //rep.send(JSON.stringify(poll));
+        //TODO : send err fonction
     });
 });
 
 app.get('/:pollId/refresh', function (req, rep) {
     'use strict';
-    var pid = Number(req.params.pollId);
-    var poll = pollRepo.getById(pid);
-    // TODO : handle poll undefined
-    rep.send(JSON.stringify(poll));
+    var pid = req.params.pollId;
+    console.log("refresh, pid " + pid);
+    pollRepo.getById(pid, function (poll) {
+        rep.send(JSON.stringify(poll));
+    });
 });
 
 app.post('/:pollId/update', function (req, rep) {
@@ -86,8 +79,9 @@ app.post('/:pollId/update', function (req, rep) {
     console.log(req.param('poll'));
     var poll = req.param('poll');
     console.log('poll ' + JSON.stringify(poll));
-    pollRepo.save(poll);
-    rep.send('OK');
+    pollRepo.save(poll, function () {
+        rep.send('OK');
+    });
     // or a fat nasty exception but OSEF for now...
 });
 

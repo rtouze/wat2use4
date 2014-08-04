@@ -8,48 +8,50 @@ var ObjectID = mongo.ObjectID;
 // Connect to the db
 
 var cache = {};
-var current_key = 1;
 
 exports.save = function (poll, callback) {
+    console.log("Poll._id = " + poll._id);
     if (!poll._id) {
-        poll.id = current_key;
         mongoClient.connect("mongodb://localhost:27017/db", function(err, db) {
             if(err) { return console.log(err); }
             var collection = db.collection('wat2use4');
-            console.log('Collection recuperee');
-            console.log('on est bien avec un pollid a -1');
             collection.insert(poll, {w: 1}, function (err, result) {
                 if(err) { console.log(err); }
                 console.log(result);
                 callback(poll);
             });
-
+        });
+    } else {
+        mongoClient.connect("mongodb://localhost:27017/db", function(err, db) {
+            console.log("On update " + poll._id);
+            if(err) { return console.log(err); }
+            var collection = db.collection('wat2use4');
+            collection.update(
+                {_id: ObjectID.createFromHexString(poll._id)},
+                {$set: {
+                    results: poll.results,
+                    voteCount: poll.voteCount,
+                    timeline: poll.timeline
+                       }},
+                       {w: 1},
+                       function (err, result) {
+                           if(err) { console.log(err); }
+                           console.log(result);
+                           callback();
+                       }
+                );
         });
     }
-//    if (poll.id < 0) {
-//        poll.id = current_key;
-//        current_key += 1;
-//    }
-//    cache[poll.id] = poll;
 };
 
-exports.getById = function (id) {
+exports.getById = function (id, callback) {
     mongoClient.connect("mongodb://localhost:27017/db", function(err, db) {
         if(err) { return console.log(err); }
         var collection = db.collection('wat2use4');
-        console.log('Collection recuperee');
-        console.log('on est bien avec un pollid a -1');
-        collection.findOne({id: id}, function (err, result) {
+        collection.findOne({_id: ObjectID.createFromHexString(id)}, function (err, result) {
             if(err) { console.log(err); }
-            return result;
+            console.log('get result ' + result);
+            callback(result);
         });
     });
-//    temp = cache[id];
-//    return {
-//        id: temp.id,
-//        results: temp.results || {},
-//        timeline: temp.timeline || [],
-//        voteCount: temp.voteCount || 0,
-//        question: temp.question || 'Undifined question'
-//    };
 };

@@ -13,7 +13,7 @@ $(function () {
         question;
 
     var pullData = function () {
-        var pollId = Number(window.location.pathname.substr(1));
+        var pollId = window.location.pathname.substr(1);
         var  xhr = new XMLHttpRequest();
         var resp;
         xhr.open('GET', '/' + pollId +  '/refresh');
@@ -77,23 +77,21 @@ $(function () {
             }
         } 
 
-        var pollId = Number(window.location.pathname.substr(1));
-        if (pollId !== NaN) {
-            var pollChange = {id: pollId,
-                timeline: advice_list,
-                results: stats,
-                voteCount: vote_count,
-                question: question};
-            var xhr = new XMLHttpRequest();
-            var data = {'poll': pollChange};
-            xhr.open('POST', '/' + pollId + '/update', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.setRequestHeader("Content-length", data.length);
-            xhr.send(JSON.stringify(data));
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    console.info('Data send to server');
-                }
+        var pollId = window.location.pathname.substr(1);
+        var pollChange = {_id: pollId,
+            timeline: advice_list,
+            results: stats,
+            voteCount: vote_count,
+            question: question};
+        var xhr = new XMLHttpRequest();
+        var data = {'poll': pollChange};
+        xhr.open('POST', '/' + pollId + '/update', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader("Content-length", data.length);
+        xhr.send(JSON.stringify(data));
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.info('Data send to server');
             }
         }
     });
