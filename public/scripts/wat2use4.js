@@ -60,8 +60,6 @@ $(function () {
         render_timeline(advice_list);
 
         result = content.match(/#(\S+)(\s|$|\.)/g);
-        // STOP: needs testing
-        // TODO error JQuery somewhere
         if (result !== null) {
             var adaptedResult = result.map(
                     function (item) { return item.trim().replace(/(^#|\s|\.)/g, '').toLowerCase(); }

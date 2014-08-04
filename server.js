@@ -4,6 +4,9 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var pollRepo = require('./model/poll_repository.js')
+var mongo = require('mongodb');
+var mongoClient = mongo.MongoClient;
+var ObjectID = mongo.ObjectID;
 
 app.engine('.html', require('ejs').__express);
 app.set('view engine', 'html')
@@ -19,28 +22,55 @@ app.post('/poll_submit', function (req, res) {
     'use strict';
     console.log('I received ' + req.param('question'));
     var poll = {
-        id: -1,
         question: req.param('question'),
         timeline: [],
         results: {},
         voteCount: 0
+   
     };
 
-    pollRepo.save(poll);
-    console.log('poll id = ' + poll.id);
-    res.send(String(poll.id));
+
+    /*
+    pollRepo.save(poll, function (savedPoll) {
+        res.send(savedPoll._id.toHexString());
+        
+    })
+
+    */
+    
+
+    mongoClient.connect("mongodb://localhost:27017/db", function(err, db) {
+        if(err) { return console.log(err); }
+        var collection = db.collection('wat2use4');
+        console.log('Collection recuperee');
+        console.log('on est bien avec un pollid a -1');
+        collection.insert(poll, {w: 1}, function (err, result) {
+            if(err) { console.log(err); }
+            console.log('Result' + result);
+            console.log('result[0]' + result[0]);
+            console.log('oh putain ' + poll._id.toHexString());
+            res.send(poll._id.toHexString());
+        });
+    });
 });
 
 app.get('/:pollId', function (req, rep) {
     'use strict';
-    var pid = Number(req.params.pollId);
-    var poll = pollRepo.getById(pid);
-    // TODO : what if no poll ?
-    if (poll) {
-        rep.render('wat2use4', {poll: poll})
-    } else {
-        rep.send('Poll ' + req.params.pollId + ' not found.');
-    }
+    console.log("on demande le poll " + req.params.pollId);
+    // A partir de la, toute cette merde ne marche pas...
+    mongoClient.connect("mongodb://localhost:27017/db", function(err, db) {
+        if(err) { return console.log(err); }
+        var collection = db.collection('wat2use4');
+        var oid = ObjectID.createFromHexString(req.params.pollId);
+        console.log("objectID = " + oid);
+        collection.findOne({_id: oid}, function (err, result) {
+            if(err) { 
+                rep.send('Poll ' + req.params.pollId + ' not found.');
+            }
+            console.log("Result ? " + result);
+            rep.render('wat2use4', {poll: result});
+        });
+    });
 });
 
 app.get('/:pollId/refresh', function (req, rep) {
