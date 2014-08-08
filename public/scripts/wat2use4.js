@@ -6,6 +6,12 @@
 
 $(function () {
     'use strict';
+    var socket = io();
+    socket.on('refresh', function (msg) {
+        console.debug('j ai un refresh');
+        pullData();
+    });
+
     var question_default = $('#question').html().trim(),
         stats = {},
         vote_count = 0,
@@ -13,6 +19,7 @@ $(function () {
         question;
 
     var pullData = function () {
+        console.debug('je pull les data');
         var pollId = window.location.pathname.substr(1);
         var  xhr = new XMLHttpRequest();
         var resp;
@@ -25,7 +32,7 @@ $(function () {
                 initPage(JSON.parse(resp));
             }
         }
-    }();
+    };
 
     var initPage = function (poll) {
         stats = {},
@@ -125,6 +132,8 @@ $(function () {
         }
         $placeHolder.empty().append($resultList);
     };
+
+    pullData();
 
 });
 

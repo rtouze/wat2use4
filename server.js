@@ -12,8 +12,6 @@ app.set('view engine', 'html')
 app.use(express.static(__dirname + '/public'))
 app.use(bodyParser());
 
-// Marche pas...
-//http.listen(80);
 
 app.get('/', function (req, res) {
     'use strict';
@@ -43,7 +41,6 @@ app.get('/:pollId', function (req, rep) {
     var pid = req.params.pollId;
     pollRepo.getById(pid, function (result) {
         rep.render('wat2use4', {poll: result});
-        //rep.send(JSON.stringify(poll));
         //TODO : send err fonction
     });
 });
@@ -65,10 +62,11 @@ app.post('/:pollId/update', function (req, rep) {
     pollRepo.save(poll, function () {
         rep.send('OK');
     });
+    io.emit('refresh', undefined);
     // or a fat nasty exception but OSEF for now...
 });
 
-var server = app.listen(3000, function () {
+var server = http.listen(3000, function () {
     console.log('app up and running on 3000...');
 });
 
@@ -78,6 +76,3 @@ app.use(function(err, req, res, next){
     res.send(err.status || 500, { error: err.message });
 });
 
-//io.on('connection', function (socket) {
-//    console.log('user connected');
-//});
