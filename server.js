@@ -4,14 +4,16 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var pollRepo = require('./model/poll_repository.js')
-var mongo = require('mongodb');
-var mongoClient = mongo.MongoClient;
-var ObjectID = mongo.ObjectID;
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
 app.engine('.html', require('ejs').__express);
 app.set('view engine', 'html')
 app.use(express.static(__dirname + '/public'))
 app.use(bodyParser());
+
+// Marche pas...
+//http.listen(80);
 
 app.get('/', function (req, res) {
     'use strict';
@@ -26,32 +28,13 @@ app.post('/poll_submit', function (req, res) {
         timeline: [],
         results: {},
         voteCount: 0
-   
     };
-
 
     pollRepo.save(poll, function (savedPoll) {
         res.send(savedPoll._id.toHexString());
         
     })
 
-    
-
-    /*
-    mongoClient.connect("mongodb://localhost:27017/db", function(err, db) {
-        if(err) { return console.log(err); }
-        var collection = db.collection('wat2use4');
-        console.log('Collection recuperee');
-        console.log('on est bien avec un pollid a -1');
-        collection.insert(poll, {w: 1}, function (err, result) {
-            if(err) { console.log(err); }
-            console.log('Result' + result);
-            console.log('result[0]' + result[0]);
-            console.log('oh putain ' + poll._id.toHexString());
-            res.send(poll._id.toHexString());
-        });
-    });
-    */
 });
 
 app.get('/:pollId', function (req, rep) {
@@ -95,4 +78,6 @@ app.use(function(err, req, res, next){
     res.send(err.status || 500, { error: err.message });
 });
 
-
+//io.on('connection', function (socket) {
+//    console.log('user connected');
+//});
