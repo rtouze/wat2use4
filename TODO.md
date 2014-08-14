@@ -1,6 +1,3 @@
-* Close connections on MongoDb !!!!!
-* Fix client deconnection in socketIo
-* Fix displayed URL when the poll is created
 * Review poll result sizing.
 * Review the regex to extract the word. Unit testing is needed.
 * Allow several words as keyword

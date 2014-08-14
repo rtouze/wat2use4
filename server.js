@@ -12,7 +12,7 @@ app.set('view engine', 'html')
 app.use(express.static(__dirname + '/public'))
 app.use(bodyParser());
 
-app.get('', function () {
+app.get('', function (req, res) {
     'use strict';
     res.render('index', {title: 'Ma page avec express'});
 });
@@ -87,13 +87,16 @@ app.post('/:pollId/update', function (req, rep) {
     }
 });
 
-var server = http.listen(3000, function () {
-    console.log('app up and running on 3000...');
-});
 
 app.use(function(err, req, res, next){
     // whatever you want here, feel free to populate
     // properties on `err` to treat it differently in here.
     res.send(err.status || 500, { error: err.message });
+});
+
+pollRepo.connectDb( function () {
+    http.listen(3000, function () {
+        console.log('app up and running on 3000...');
+    });
 });
 

@@ -17,7 +17,6 @@ window.onload = function () {
         var question = document.querySelector('div#question').textContent.trim();
 
         var data = {'question': question};
-        var redirectionId = undefined;
         console.debug(question);
 
         xhr.open('POST', '/poll_submit', true);
@@ -31,12 +30,12 @@ window.onload = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     buttonClicked = true;
-                    redirectionId = xhr.responseText;
+                    var redirectionId = xhr.responseText;
                     console.debug('redirectionId recupere');
                     if (redirectionId) {
                         var result = document.querySelector('div#result');
                         result.innerHTML = '<p>Click here :</p><a href="/' + redirectionId +'">' + 
-                            window.location.href + :pwdredirectionId + '</a>';
+                            window.location.href + redirectionId + '</a>';
                     }
                 } else {
                     console.error('sth went wrong in XHR');

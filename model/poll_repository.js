@@ -11,27 +11,31 @@ var mongoDb = 'db';
 // Connect to the db
 
 var cache = {};
+var dbInstance;
+
+
+exports.connectDb = function (callback) {
+    mongoClient.connect("mongodb://" + mongoHost + ":" + mongoPort + "/" + mongoDb, function(err, db) {
+        if(err) { console.log(err); }
+        dbInstance = db;
+        callback();
+        });
+};
 
 exports.save = function (poll, callback) {
     console.log("Poll._id = " + poll._id);
     if (!poll._id) {
-        mongoClient.connect("mongodb://" + mongoHost + ":" + mongoPort + "/" + mongoDb, function(err, db) {
-            if(err) { console.log(err); }
-            var collection = db.collection('wat2use4');
-            collection.insert(poll, {w: 1}, function (err, result) {
-                if(err) {
-                    console.log(err);
-                    throw err;
-                }
-                db.close();
-                callback(poll);
-            });
+        var collection = dbInstance.collection('wat2use4');
+        collection.insert(poll, {w: 1}, function (err, result) {
+            if(err) {
+                console.log(err);
+                throw err;
+            }
+            callback(poll);
         });
     } else {
-        mongoClient.connect("mongodb://" + mongoHost + ":" + mongoPort + "/" + mongoDb, function(err, db) {
             console.log("On update " + poll._id);
-            if(err) { console.log(err); }
-            var collection = db.collection('wat2use4');
+            var collection = dbInstance.collection('wat2use4');
             collection.update(
                 {_id: ObjectID.createFromHexString(poll._id)},
                 { $set: {
@@ -45,22 +49,16 @@ exports.save = function (poll, callback) {
                            throw err;
                            }
                            console.log(result);
-                           db.close();
                            callback();
                        });
-        });
     }
 };
 
 exports.getById = function (id, callback) {
-    mongoClient.connect("mongodb://" + mongoHost + ":" + mongoPort + "/" + mongoDb, function(err, db) {
-        if(err) { return console.log(err); }
-        var collection = db.collection('wat2use4');
+        var collection = dbInstance.collection('wat2use4');
         collection.findOne({_id: ObjectID.createFromHexString(id)}, function (err, result) {
             if(err) { console.log(err); }
             console.log('get result ' + result);
-            db.close();
             callback(result);
         });
-    });
 };
