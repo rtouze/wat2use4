@@ -35,8 +35,8 @@ window.onload = function () {
                     console.debug('redirectionId recupere');
                     if (redirectionId) {
                         var result = document.querySelector('div#result');
-                        result.innerHTML = '<p>Click here :</p><a href="/' + redirectionId +'">http://wat2use4/'
-                            + redirectionId + '</a>';
+                        result.innerHTML = '<p>Click here :</p><a href="/' + redirectionId +'">' + 
+                            window.location.href + :pwdredirectionId + '</a>';
                     }
                 } else {
                     console.error('sth went wrong in XHR');

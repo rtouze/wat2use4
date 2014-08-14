@@ -12,6 +12,10 @@ app.set('view engine', 'html')
 app.use(express.static(__dirname + '/public'))
 app.use(bodyParser());
 
+app.get('', function () {
+    'use strict';
+    res.render('index', {title: 'Ma page avec express'});
+});
 
 app.get('/', function (req, res) {
     'use strict';
@@ -30,7 +34,6 @@ app.post('/poll_submit', function (req, res) {
 
     pollRepo.save(poll, function (savedPoll) {
         res.send(savedPoll._id.toHexString());
-        
     })
 
 });
@@ -39,19 +42,31 @@ app.get('/:pollId', function (req, rep) {
     'use strict';
     console.log("on demande le poll " + req.params.pollId);
     var pid = req.params.pollId;
+    try {
     pollRepo.getById(pid, function (result) {
         rep.render('wat2use4', {poll: result});
         //TODO : send err fonction
     });
+    }
+    catch(e) 
+    {
+        res.send("pollId " + req.params.pollId + " not found");
+    }
 });
 
 app.get('/:pollId/refresh', function (req, rep) {
     'use strict';
     var pid = req.params.pollId;
     console.log("refresh, pid " + pid);
-    pollRepo.getById(pid, function (poll) {
-        rep.send(JSON.stringify(poll));
-    });
+    try {
+        pollRepo.getById(pid, function (poll) {
+            rep.send(poll);
+        });
+    }
+    catch(e) 
+    {
+        res.send("pollId " + req.params.pollId + " not found");
+    }
 });
 
 app.post('/:pollId/update', function (req, rep) {
@@ -59,11 +74,17 @@ app.post('/:pollId/update', function (req, rep) {
     console.log(req.param('poll'));
     var poll = req.param('poll');
     console.log('poll ' + JSON.stringify(poll));
-    pollRepo.save(poll, function () {
-        rep.send('OK');
-    });
-    io.emit('refresh', undefined);
+    try {
+        pollRepo.save(poll, function () {
+            rep.send('OK');
+        });
+        io.emit('refresh', undefined);
+    }
     // or a fat nasty exception but OSEF for now...
+    catch(e) 
+    {
+        res.send("pollId " + req.params.pollId + " not found");
+    }
 });
 
 var server = http.listen(3000, function () {
