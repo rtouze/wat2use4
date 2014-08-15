@@ -4,44 +4,8 @@
  *  socket.io 1.0
  * */
 
-var Model = {
-    Timeline: function (tlList) {
-        'use strict';
-        var foolist = tlList;
-        var appended = false;
 
-        var asList = function () {
-            return foolist;
-        };
-
-        var justAppended = function () {
-            return appended;
-        }
-
-        var toggleAppended = function () {
-            appended = !appended;
-        }
-
-        var append = function (content) {
-            foolist.reverse();
-            foolist.push((new Date()).toISOString() + ' - ' + content);
-            foolist.reverse();
-            if (foolist.length > 10) {
-                foolist.pop();
-            }
-            appended = true;
-        };
-
-        var out = {
-            asList: asList,
-            append: append,
-            justAppended: justAppended,
-            toggleAppended: toggleAppended
-        };
-        return out;
-    }
-};
-
+// Launched on page load
 $(function () {
     'use strict';
     var pollId = window.location.pathname.substr(1);
@@ -130,11 +94,14 @@ $(function () {
         }
     });
 
-    var renderTimeline = function (timelineee) {
+    var renderTimeline = function (timelineAsList) {
         $('div#timeline').empty();
-        for (var i = 0; i < timelineee.length; i++) {
+        for (var i = 0; i < timelineAsList.length; i++) {
             var $pushed_advice = $('<div class="tl_advice">');
-            $pushed_advice.html(timelineee[i].replace(/#(\S+)(\s|$|\.)/g, '<em>$&</em>'));
+            $pushed_advice.html(
+                    new Date(timelineAsList[i].date).toLocaleString() +
+                    ' - ' +
+                    timelineAsList[i].content.replace(/#(\S+)(\s|$|\.)/g, '<em>$&</em>'));
             $('div#timeline').append($pushed_advice);
         }
     };

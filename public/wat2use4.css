@@ -5,7 +5,7 @@ html {
 }
 
 body {
-  font-size: 1em;
+  font-size: 1.2em;
   margin: 0;
   font-family: sans-serif;
 }
@@ -17,6 +17,11 @@ h1 {
   text-align: center;
   font-style: italic;
   color: darkgrey;
+  font-size: 3em;
+}
+
+h1 > div {
+    display: inline;
 }
 
 span.title_emphasis {
@@ -36,20 +41,22 @@ div#main_placeholder {
 /* Question styles */
 
 div#question {
-  border: 1px grey solid;
-  height: 10em;
   width: 100%;
   color: grey;
   padding: 0.3em;
 }
 
 div#question.edit_mode {
-  color: black;
+  border: 1px grey solid;
+  height: 10em;
+  font-style: italic;
 }
 
 div#question.posted {
-  /* TEMP */
   font-style: italic;
+  font-size: 2em;
+  border: none;
+  text-align: center;
 }
 
 div#results {
@@ -86,7 +93,7 @@ div#timeline {
 
 div.tl_advice {
   width: 100%;
-  border: solid 1px black;
+  border: 1px grey solid;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
   padding: 0.3em;

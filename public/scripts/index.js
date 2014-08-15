@@ -12,12 +12,9 @@ window.onload = function () {
 
         console.debug("J'ai cliqué sur le bouton");
         var xhr = new XMLHttpRequest();
-
-        // Warning : danger
-        var question = document.querySelector('div#question').textContent.trim();
-
-        var data = {'question': question};
-        console.debug(question);
+        var data = {
+            'question': document.querySelector('div#question').textContent.trim()
+        };
 
         xhr.open('POST', '/poll_submit', true);
         xhr.setRequestHeader('Content-Type', 'application/json');

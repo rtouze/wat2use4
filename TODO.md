@@ -5,4 +5,3 @@
 * Use a fancy js framework for client (Angular ?)
 * Do a demo, provide explaination
 * Allow to submit with a shortcut. Use tab to go on submit button
-* Use rooms for socketIo
