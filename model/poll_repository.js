@@ -14,6 +14,7 @@ var dbInstance;
 
 // Connect to the db
 exports.connectDb = function (callback) {
+    console.log('Connecting to mongo at ' + mongoUri);
     mongoClient.connect(mongoUri, function(err, db) {
         if(err) { console.log(err); }
         dbInstance = db;
