@@ -5,17 +5,16 @@
 var mongo = require('mongodb');
 var mongoClient = mongo.MongoClient;
 var ObjectID = mongo.ObjectID;
-var mongoHost = 'localhost';
-var mongoPort = '27017';
-var mongoDb = 'db';
-// Connect to the db
-
-var cache = {};
+var localMongoUri = "mongodb://localhost/27017/db";
+var mongoUri = process.env.MONGOLAB_URI ||
+               process.env.MONGOHQ_URL ||
+               localMongoUri;
 var dbInstance;
 
 
+// Connect to the db
 exports.connectDb = function (callback) {
-    mongoClient.connect("mongodb://" + mongoHost + ":" + mongoPort + "/" + mongoDb, function(err, db) {
+    mongoClient.connect(mongoUri, function(err, db) {
         if(err) { console.log(err); }
         dbInstance = db;
         callback();

@@ -1,5 +1,5 @@
 {
-  "name": "wat2use",
+  "name": "wat2use4",
   "description": "Nice application to create real time poll",
   "dependencies": {
     "express": "^4.4.1",
@@ -12,5 +12,22 @@
     "mocha": "^1.20.0",
     "superagent": "^0.18.2",
     "chai": "^1.9.1"
-  }
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "version": "0.0.0",
+  "main": "server.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "/Volumes/CORSAIR/repositories/wat2use4.git/"
+  },
+  "keywords": [
+    "poll"
+  ],
+  "author": "Romain TOUZE",
+  "license": "ISC"
 }
