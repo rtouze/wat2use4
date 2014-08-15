@@ -4,23 +4,37 @@
  *  socket.io
  * */
 
+var Model = {
+    Timeline: function (tlList) {
+        'use strict';
+        var list = tlList;
+        var asList = function () {
+            return list;
+        };
+        var append = function (content) {
+            list.reverse();
+            list.push((new Date()).toISOString() + ' - ' + content);
+            list.reverse();
+            if (list.length > 10) {
+                list.pop();
+            }
+        };
+        return {asList: asList, append: append};
+    }
+};
+
 $(function () {
     'use strict';
+    var pollId = window.location.pathname.substr(1);
     var socket = io();
-    socket.on('refresh', function (msg) {
-        console.debug('j ai un refresh');
-        pullData();
-    });
 
-    var question_default = $('#question').html().trim(),
-        stats = {},
-        vote_count = 0,
-        advice_list = [],
+    var results = {},
+        voteCount = 0,
+        timeline = [],
         question;
 
+    // Get poll data through XHR
     var pullData = function () {
-        console.debug('je pull les data');
-        var pollId = window.location.pathname.substr(1);
         var  xhr = new XMLHttpRequest();
         var resp;
         xhr.open('GET', '/' + pollId +  '/refresh');
@@ -28,23 +42,19 @@ $(function () {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4 && xhr.status === 200) {
                 resp = xhr.responseText;
-                console.debug("RESP = " + resp);
                 initPage(JSON.parse(resp));
             }
         }
     };
 
     var initPage = function (poll) {
-        stats = {},
-        vote_count = 0,
-        advice_list = [];
-        stats = poll.results;
-        advice_list = poll.timeline;
-        vote_count = poll.voteCount;
+        results = poll.results;
+        timeline = poll.timeline;
+        voteCount = poll.voteCount;
         question = poll.question;
         $('#question').html(question);
-        refreshStatsPlaceHolder(stats);
-        render_timeline(advice_list);
+        refreshStatsPlaceHolder(results);
+        render_timeline(timeline);
     }
 
     $('div#advice').on('focus', function (event) {
@@ -58,13 +68,13 @@ $(function () {
         var advice, content, result, adviceDiv;
         adviceDiv  = document.querySelector('div#advice');
         content = adviceDiv.textContent.trim();
-        advice_list.reverse();
-        advice_list.push((new Date()).toISOString() + ' - ' + content);
-        advice_list.reverse();
-        if (advice_list.length > 10) {
-            advice_list.pop();
+        timeline.reverse();
+        timeline.push((new Date()).toISOString() + ' - ' + content);
+        timeline.reverse();
+        if (timeline.length > 10) {
+            timeline.pop();
         }
-        render_timeline(advice_list);
+        render_timeline(timeline);
 
         result = content.match(/#(\S+)(\s|$|\.)/g);
         if (result !== null) {
@@ -75,20 +85,19 @@ $(function () {
             var currentResult;
             for (i = 0; i < adaptedResult.length; i++) {
                 currentResult = adaptedResult[i];
-                if (stats[currentResult] === undefined) {
-                    stats[currentResult] = 0
+                if (results[currentResult] === undefined) {
+                    results[currentResult] = 0
                 }
-                stats[currentResult] += 1;
-                vote_count += 1;
-                refreshStatsPlaceHolder(stats);
+                results[currentResult] += 1;
+                voteCount += 1;
+                refreshStatsPlaceHolder(results);
             }
         } 
 
-        var pollId = window.location.pathname.substr(1);
         var pollChange = {_id: pollId,
-            timeline: advice_list,
-            results: stats,
-            voteCount: vote_count,
+            timeline: timeline,
+            results: results,
+            voteCount: voteCount,
             question: question};
         var xhr = new XMLHttpRequest();
         var data = {'poll': pollChange};
@@ -112,28 +121,34 @@ $(function () {
         }
     };
 
-    var refreshStatsPlaceHolder = function (stats) {
+    var refreshStatsPlaceHolder = function (results) {
         'use strict';
         // TODO: write sorted list
         var $placeHolder = $('div#result_place_holder'),
             $resultList = $('<ul>'),
             $currentAdviceElement,
             size, min_size, calculated_size;
-        console.debug('vote_count = ' + vote_count)
             min_size = 0.8;
 
-        for (advice in stats) {
-            calculated_size = Number(stats[advice])*2.5/vote_count
+        for (advice in results) {
+            calculated_size = Number(results[advice])*2.5/voteCount
             size =  calculated_size < min_size ? min_size : calculated_size;
-            console.debug('Size ' + size)
-            $currentAdviceElement = $('<li>' + advice + ': ' + stats[advice] + '</li>');
+            $currentAdviceElement = $('<li>' + advice + ': ' + results[advice] + '</li>');
             $currentAdviceElement.css('font-size', size + 'em')
             $resultList.append($currentAdviceElement);
         }
         $placeHolder.empty().append($resultList);
     };
 
+    // Main exec part
     pullData();
 
+    socket.on('ok', function () {
+        socket.emit("joinPoll", {id: pollId});
+    });
+
+    socket.on('refresh', function (msg) {
+        pullData();
+    });
 });
 
