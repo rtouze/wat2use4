@@ -10,7 +10,10 @@ var io = require('socket.io')(http);
 app.engine('.html', require('ejs').__express);
 app.set('view engine', 'html');
 app.use(express.static(__dirname + '/public'));
-app.use(bodyParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+      extended: true
+}));
 
 // Default route
 app.get('', function (req, res) {
