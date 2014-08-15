@@ -1,16 +1,16 @@
 // Test file to test wat2use4 server
 // These are system tests, they needs mongoDb server end express to run
 
-var superagent = require('superagent');
-var expect = require('expect.js');
+var superagent = require('superagent'),
+    should = require('chai').should();
 
 describe('database is OK', function () {
     it('should create a new poll', function (done) {
         superagent.post('http://localhost:3000/poll_submit')
         .send({'question' : 'lol?'})
         .end(function (error, res) {
-            expect(error).to.be(null);
-            expect(res.text.length).to.be(24);
+            should.not.exist(error);
+            res.text.length.should.equal(24);
             done();
         });
     });
@@ -22,8 +22,8 @@ describe('database is OK', function () {
             var _id = res.text;
             superagent.get('http://localhost:3000/' + _id + '/refresh')
             .end(function (err2, res2) {
-                expect(err2).to.be(null);
-                expect(res2.body.question).to.be('lol?');
+                should.not.exist(err2);
+                res2.body.question.should.equal('lol?');
                 done();
             });
         });
@@ -47,7 +47,7 @@ describe('database is OK', function () {
                     externalErr = err2;
                 });
             }
-            expect(externalErr).to.be(null);
+            should.not.exist(externalErr);
             done();
         });
     });
