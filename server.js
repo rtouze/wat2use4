@@ -102,8 +102,9 @@ app.use(function (err, req, res, next) {
 
 // Persistant connection to database
 pollRepo.connectDb( function () {
-    http.listen(3000, function () {
-        console.log('app up and running on 3000...');
+    var port = process.env.PORT || 3000
+    http.listen(port, function () {
+        console.log('app up and running on ' + port  '...');
     });
 });
 
