@@ -1,25 +1,44 @@
 /* Javascript for w2u4 client side. 
  * Dependancies :
- *  Jquery 2
- *  socket.io
+ *  jQuery
+ *  socket.io 1.0
  * */
 
 var Model = {
     Timeline: function (tlList) {
         'use strict';
-        var list = tlList;
+        var foolist = tlList;
+        var appended = false;
+
         var asList = function () {
-            return list;
+            return foolist;
         };
+
+        var justAppended = function () {
+            return appended;
+        }
+
+        var toggleAppended = function () {
+            appended = !appended;
+        }
+
         var append = function (content) {
-            list.reverse();
-            list.push((new Date()).toISOString() + ' - ' + content);
-            list.reverse();
-            if (list.length > 10) {
-                list.pop();
+            foolist.reverse();
+            foolist.push((new Date()).toISOString() + ' - ' + content);
+            foolist.reverse();
+            if (foolist.length > 10) {
+                foolist.pop();
             }
+            appended = true;
         };
-        return {asList: asList, append: append};
+
+        var out = {
+            asList: asList,
+            append: append,
+            justAppended: justAppended,
+            toggleAppended: toggleAppended
+        };
+        return out;
     }
 };
 
@@ -30,7 +49,7 @@ $(function () {
 
     var results = {},
         voteCount = 0,
-        timeline = [],
+        timeline,
         question;
 
     // Get poll data through XHR
@@ -49,13 +68,13 @@ $(function () {
 
     var initPage = function (poll) {
         results = poll.results;
-        timeline = poll.timeline;
+        timeline = Model.Timeline(poll.timeline);
         voteCount = poll.voteCount;
         question = poll.question;
         $('#question').html(question);
         refreshStatsPlaceHolder(results);
-        render_timeline(timeline);
-    }
+        renderTimeline(timeline.asList());
+    };
 
     $('div#advice').on('focus', function (event) {
         var initial_content = 'Type your advice here...';
@@ -68,13 +87,9 @@ $(function () {
         var advice, content, result, adviceDiv;
         adviceDiv  = document.querySelector('div#advice');
         content = adviceDiv.textContent.trim();
-        timeline.reverse();
-        timeline.push((new Date()).toISOString() + ' - ' + content);
-        timeline.reverse();
-        if (timeline.length > 10) {
-            timeline.pop();
-        }
-        render_timeline(timeline);
+        timeline.append(content);
+        console.log(timeline.justAppended());
+        renderTimeline(timeline.asList());
 
         result = content.match(/#(\S+)(\s|$|\.)/g);
         if (result !== null) {
@@ -94,11 +109,14 @@ $(function () {
             }
         } 
 
-        var pollChange = {_id: pollId,
-            timeline: timeline,
+        var pollChange = {
+            _id: pollId,
+            timeline: timeline.asList(),
             results: results,
             voteCount: voteCount,
-            question: question};
+            question: question
+        };
+
         var xhr = new XMLHttpRequest();
         var data = {'poll': pollChange};
         xhr.open('POST', '/' + pollId + '/update', true);
@@ -112,7 +130,7 @@ $(function () {
         }
     });
 
-    var render_timeline = function (timelineee) {
+    var renderTimeline = function (timelineee) {
         $('div#timeline').empty();
         for (var i = 0; i < timelineee.length; i++) {
             var $pushed_advice = $('<div class="tl_advice">');
@@ -148,7 +166,14 @@ $(function () {
     });
 
     socket.on('refresh', function (msg) {
-        pullData();
+        if (!timeline || !timeline.justAppended()) {
+            pullData();
+        }
+        else {
+            if (timeline) {
+                timeline.toggleAppended();
+            }
+        }
     });
 });
 
