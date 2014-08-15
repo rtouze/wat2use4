@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>lib.js tests.</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css"  href="../../node_modules/mocha/mocha.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+    <script src="../../node_modules/mocha/mocha.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+    <script>mocha.setup('bdd')</script>
+    <script src="../../public/scripts/lib.js"></script>
+    <script src="lib.test.js"></script>
+    <script>
+      chai.should();
+      mocha.run();
+    </script>
+  </body>
+</html>
+
