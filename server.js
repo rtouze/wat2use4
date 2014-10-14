@@ -6,6 +6,9 @@ var app = express();
 var pollRepo = require('./model/poll_repository.js');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var renderIndex = function (res) {
+    res.render('index');
+};
 
 app.engine('.html', require('ejs').__express);
 app.set('view engine', 'html');
@@ -18,13 +21,13 @@ app.use(bodyParser.urlencoded({
 // Default route
 app.get('', function (req, res) {
     'use strict';
-    res.render('index', {title: 'Ma page avec express'});
+    renderIndex(res);
 });
 
 // Default route
 app.get('/', function (req, res) {
     'use strict';
-    res.render('index', {title: 'Ma page avec express'});
+    renderIndex(res);
 });
 
 // Poll creation.
@@ -37,11 +40,14 @@ app.post('/poll_submit', function (req, res) {
         results: {},
         voteCount: 0
     };
-
-    pollRepo.save(poll, function (savedPoll) {
-        res.send(savedPoll._id.toHexString());
-    });
-
+    try {
+        pollRepo.save(poll, function (savedPoll) {
+            res.send(savedPoll._id.toHexString());
+        });
+    }
+    catch(e) {
+        res.send(500, e);
+    }
 });
 
 // Serve page for a specific poll if it exists
@@ -55,7 +61,7 @@ app.get('/:pollId', function (req, rep) {
         });
     }
     catch(e) {
-        res.send("pollId " + req.params.pollId + " not found");
+        res.send(404, "pollId " + req.params.pollId + " not found (" + e + ").");
     }
 });
 
@@ -70,7 +76,7 @@ app.get('/:pollId/refresh', function (req, rep) {
         });
     }
     catch(e) {
-        res.send("pollId " + req.params.pollId + " not found");
+        res.send(404, "pollId " + req.params.pollId + " not found (" + e + ").");
     }
 });
 
@@ -90,7 +96,7 @@ app.post('/:pollId/update', function (req, rep) {
     }
     // or a fat nasty exception but OSEF for now...
     catch(e) {
-        res.send("pollId " + req.params.pollId + " not found");
+        res.send(404, "pollId " + req.params.pollId + " not found (" + e + ").");
     }
 });
 

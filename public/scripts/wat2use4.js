@@ -18,16 +18,12 @@ $(function () {
 
     // Get poll data through XHR
     var pullData = function () {
-        var  xhr = new XMLHttpRequest();
-        var resp;
-        xhr.open('GET', '/' + pollId +  '/refresh');
-        xhr.send();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                resp = xhr.responseText;
-                initPage(JSON.parse(resp));
-            }
-        }
+        $.ajax({
+            url: '/' + pollId +  '/refresh'
+        })
+        .done(function (resp) {
+            initPage(resp);
+        });
     };
 
     var initPage = function (poll) {
@@ -60,12 +56,12 @@ $(function () {
             var adaptedResult = result.map(
                     function (item) { return item.trim().replace(/(^#|\s|\.)/g, '').toLowerCase(); }
                     );
-            var i = 0;
+            //var i = 0;
             var currentResult;
-            for (i = 0; i < adaptedResult.length; i++) {
+            for (var i = 0; i < adaptedResult.length; i++) {
                 currentResult = adaptedResult[i];
                 if (results[currentResult] === undefined) {
-                    results[currentResult] = 0
+                    results[currentResult] = 0;
                 }
                 results[currentResult] += 1;
                 voteCount += 1;
@@ -81,17 +77,11 @@ $(function () {
             question: question
         };
 
-        var xhr = new XMLHttpRequest();
-        var data = {'poll': pollChange};
-        xhr.open('POST', '/' + pollId + '/update', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.setRequestHeader("Content-length", data.length);
-        xhr.send(JSON.stringify(data));
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                console.info('Data send to server');
-            }
-        }
+        $.ajax({
+            type: 'POST',
+            url: '/' + pollId + '/update',
+            data: {'poll': pollChange}
+        });
     });
 
     var renderTimeline = function (timelineAsList) {
@@ -107,7 +97,6 @@ $(function () {
     };
 
     var refreshStatsPlaceHolder = function (results) {
-        'use strict';
         // TODO: write sorted list
         var $placeHolder = $('div#result_place_holder'),
             $resultList = $('<ul>'),
@@ -115,11 +104,11 @@ $(function () {
             size, min_size, calculated_size;
             min_size = 0.8;
 
-        for (advice in results) {
-            calculated_size = Number(results[advice])*2.5/voteCount
+        for (var advice in results) {
+            calculated_size = Number(results[advice])*2.5/voteCount;
             size =  calculated_size < min_size ? min_size : calculated_size;
             $currentAdviceElement = $('<li>' + advice + ': ' + results[advice] + '</li>');
-            $currentAdviceElement.css('font-size', size + 'em')
+            $currentAdviceElement.css('font-size', size + 'em');
             $resultList.append($currentAdviceElement);
         }
         $placeHolder.empty().append($resultList);
