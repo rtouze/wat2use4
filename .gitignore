@@ -1,2 +1,4 @@
 node_modules
 .*.swp
+public/scripts/bower_components/
+*.log
