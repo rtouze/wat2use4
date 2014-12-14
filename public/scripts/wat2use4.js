@@ -18,12 +18,8 @@ $(function () {
 
     // Get poll data through XHR
     var pullData = function () {
-        $.ajax({
-            url: '/' + pollId +  '/refresh'
-        })
-        .done(function (resp) {
-            initPage(resp);
-        });
+        $.ajax({ url: '/' + pollId +  '/refresh' })
+        .done(function (resp) { initPage(resp); });
     };
 
     var initPage = function (poll) {
