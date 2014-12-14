@@ -35,5 +35,17 @@ var Model = {
             toggleAppended: toggleAppended
         };
         return out;
+    },
+
+    resultSorter: function (result, returnedCount) {
+        'use strict';
+        var tmpRes = [];
+        for (var key in result) {
+            tmpRes.push([key, result[key]])
+        }
+        return tmpRes.sort( function (a, b) {
+            return b[1] - a[1];
+        })
+        .slice(0, returnedCount);
     }
 };

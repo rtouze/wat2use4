@@ -97,13 +97,18 @@ $(function () {
         var $placeHolder = $('div#result_place_holder'),
             $resultList = $('<ul>'),
             $currentAdviceElement,
-            size, min_size, calculated_size;
+            size, min_size, calculated_size,
+            sortedResult,
+            resultLine;
             min_size = 0.8;
 
-        for (var advice in results) {
-            calculated_size = Number(results[advice])*2.5/voteCount;
+        sortedResult = Model.resultSorter(results, 5);
+
+        for (var i in sortedResult) {
+            resultLine = sortedResult[i];
+            calculated_size = Number(resultLine[1])*2.5/voteCount;
             size =  calculated_size < min_size ? min_size : calculated_size;
-            $currentAdviceElement = $('<li>' + advice + ': ' + results[advice] + '</li>');
+            $currentAdviceElement = $('<li>' + resultLine[0] + ': ' + resultLine[1] + '</li>');
             $currentAdviceElement.css('font-size', size + 'em');
             $resultList.append($currentAdviceElement);
         }
