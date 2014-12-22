@@ -5,6 +5,7 @@
 var mongo = require('mongodb');
 var mongoClient = mongo.MongoClient;
 var ObjectID = mongo.ObjectID;
+var debug = require('debug')('model:poll_repository');
 var localMongoUri = "mongodb://localhost/27017/db";
 var mongoUri = process.env.MONGOLAB_URI ||
                process.env.MONGOHQ_URL ||
@@ -14,41 +15,40 @@ var dbInstance;
 
 // Connect to the db
 exports.connectDb = function (callback) {
-    console.log('Connecting to mongo at ' + mongoUri);
+    debug('Connecting to mongo at ' + mongoUri);
     mongoClient.connect(mongoUri, function(err, db) {
-        if(err) { console.log(err); }
+        if(err) {
+            throw err;
+        }
         dbInstance = db;
         callback();
         });
 };
 
 exports.save = function (poll, callback) {
-    console.log("Poll._id = " + poll._id);
+    debug("Poll._id = " + poll._id);
+    var collection = dbInstance.collection('wat2use4');
     if (!poll._id) {
-        var collection = dbInstance.collection('wat2use4');
-        collection.insert(poll, {w: 1}, function (err, result) {
+        collection.insert(poll, { w: 1 }, function (err, result) {
             if(err) {
-                console.log(err);
                 throw err;
             }
             callback(poll);
         });
     } else {
-            console.log("On update " + poll._id);
-            var collection = dbInstance.collection('wat2use4');
+            debug("On update " + poll._id);
             collection.update(
-                {_id: ObjectID.createFromHexString(poll._id)},
+                { _id: ObjectID.createFromHexString(poll._id) },
                 { $set: {
                         results: poll.results,
                         voteCount: poll.voteCount,
                         timeline: poll.timeline }},
-                       {w: 1},
+                        { w: 1 },
                        function (err, result) {
                            if(err) { 
-                               console.log(err); 
-                           throw err;
+                               throw err;
                            }
-                           console.log(result);
+                           debug(result);
                            callback();
                        });
     }
@@ -56,9 +56,11 @@ exports.save = function (poll, callback) {
 
 exports.getById = function (id, callback) {
         var collection = dbInstance.collection('wat2use4');
-        collection.findOne({_id: ObjectID.createFromHexString(id)}, function (err, result) {
-            if(err) { console.log(err); }
-            console.log('get result ' + result);
+        collection.findOne({ _id: ObjectID.createFromHexString(id) }, function (err, result) {
+            if(err) {
+                throw err;
+            }
+            debug('get result ' + result);
             callback(result);
         });
 };

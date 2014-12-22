@@ -6,6 +6,7 @@ var app = express();
 var pollRepo = require('./model/poll_repository.js');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var debug = require('debug')('express');
 var renderIndex = function (res) {
     res.render('index');
 };
@@ -33,7 +34,7 @@ app.get('/', function (req, res) {
 // Poll creation.
 app.post('/poll_submit', function (req, res) {
     'use strict';
-    console.log('I received ' + req.param('question'));
+    debug('I received ' + req.param('question'));
     var poll = {
         question: req.param('question'),
         timeline: [],
@@ -53,7 +54,7 @@ app.post('/poll_submit', function (req, res) {
 // Serve page for a specific poll if it exists
 app.get('/:pollId', function (req, rep) {
     'use strict';
-    console.log("on demande le poll " + req.params.pollId);
+    debug("on demande le poll " + req.params.pollId);
     var pid = req.params.pollId;
     try {
         pollRepo.getById(pid, function (result) {
@@ -69,7 +70,7 @@ app.get('/:pollId', function (req, rep) {
 app.get('/:pollId/refresh', function (req, rep) {
     'use strict';
     var pid = req.params.pollId;
-    console.log("refresh, pid " + pid);
+    debug("refresh, pid " + pid);
     try {
         pollRepo.getById(pid, function (poll) {
             rep.send(poll);
@@ -82,15 +83,15 @@ app.get('/:pollId/refresh', function (req, rep) {
 
 // Update poll when a new line is inserted.
 app.post('/:pollId/update', function (req, rep) {
-    console.log('on est dans post sur le poll/update');
-    console.log(req.param('poll'));
+    debug('on est dans post sur le poll/update');
+    debug(req.param('poll'));
     var poll = req.param('poll');
-    console.log('poll ' + JSON.stringify(poll));
+    debug('poll ' + JSON.stringify(poll));
     try {
         pollRepo.save(poll, function () {
             rep.send('OK');
             // emit a push notification on pollId namespace
-            console.log('Push update on socket');
+            debug('Push update on socket');
             io.to(poll._id).emit('refresh', undefined);
         });
     }
@@ -116,11 +117,11 @@ pollRepo.connectDb( function () {
 
 // Initialise socket.io room at client connection
 io.on('connection', function (socket) {
-    console.log('Client connected to socket');
+    debug('Client connected to socket');
     socket.emit('ok', {});
 
     socket.on('joinPoll', function (data) {
-        console.log('User demand to join ' + data.id);
+        debug('User demand to join ' + data.id);
         socket.join(data.id);
     });
 });
