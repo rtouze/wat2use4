@@ -17,7 +17,9 @@ var dbInstance;
 exports.connectDb = function (callback) {
     debug('Connecting to mongo at ' + mongoUri);
     mongoClient.connect(mongoUri, function(err, db) {
-        if(err) { throw err; }
+        if(err) {
+            throw err;
+        }
         dbInstance = db;
         callback();
         });
@@ -28,7 +30,9 @@ exports.save = function (poll, callback) {
     if (!poll._id) {
         var collection = dbInstance.collection('wat2use4');
         collection.insert(poll, {w: 1}, function (err, result) {
-            if(err) { throw err; }
+            if(err) {
+                throw err;
+            }
             callback(poll);
         });
     } else {
@@ -40,7 +44,7 @@ exports.save = function (poll, callback) {
                         results: poll.results,
                         voteCount: poll.voteCount,
                         timeline: poll.timeline }},
-                       {w: 1},
+                        { w: 1 },
                        function (err, result) {
                            if(err) { 
                                throw err;
@@ -54,7 +58,9 @@ exports.save = function (poll, callback) {
 exports.getById = function (id, callback) {
         var collection = dbInstance.collection('wat2use4');
         collection.findOne({_id: ObjectID.createFromHexString(id)}, function (err, result) {
-            if(err) { debug(err); }
+            if(err) {
+                throw err;
+            }
             debug('get result ' + result);
             callback(result);
         });
