@@ -111,7 +111,7 @@ app.use(function (err, req, res, next) {
 pollRepo.connectDb( function () {
     var port = process.env.PORT || 3000
     http.listen(port, function () {
-        debug('app up and running on ' + port  + '...');
+        console.log('app up and running on ' + port  + '...');
     });
 });
 

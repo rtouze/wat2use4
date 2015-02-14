@@ -5,7 +5,7 @@
 var mongo = require('mongodb');
 var mongoClient = mongo.MongoClient;
 var ObjectID = mongo.ObjectID;
-var debug = require('debug')('model:poll_repository')
+var debug = require('debug')('model:poll_repository');
 var localMongoUri = "mongodb://localhost/27017/db";
 var mongoUri = process.env.MONGOLAB_URI ||
                process.env.MONGOHQ_URL ||
@@ -27,9 +27,9 @@ exports.connectDb = function (callback) {
 
 exports.save = function (poll, callback) {
     debug("Poll._id = " + poll._id);
+    var collection = dbInstance.collection('wat2use4');
     if (!poll._id) {
-        var collection = dbInstance.collection('wat2use4');
-        collection.insert(poll, {w: 1}, function (err, result) {
+        collection.insert(poll, { w: 1 }, function (err, result) {
             if(err) {
                 throw err;
             }
@@ -37,9 +37,8 @@ exports.save = function (poll, callback) {
         });
     } else {
             debug("On update " + poll._id);
-            var collection = dbInstance.collection('wat2use4');
             collection.update(
-                {_id: ObjectID.createFromHexString(poll._id)},
+                { _id: ObjectID.createFromHexString(poll._id) },
                 { $set: {
                         results: poll.results,
                         voteCount: poll.voteCount,
@@ -57,7 +56,7 @@ exports.save = function (poll, callback) {
 
 exports.getById = function (id, callback) {
         var collection = dbInstance.collection('wat2use4');
-        collection.findOne({_id: ObjectID.createFromHexString(id)}, function (err, result) {
+        collection.findOne({ _id: ObjectID.createFromHexString(id) }, function (err, result) {
             if(err) {
                 throw err;
             }
