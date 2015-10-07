@@ -41,7 +41,7 @@ var Model = {
         'use strict';
         var tmpRes = [];
         for (var key in result) {
-            tmpRes.push([key, result[key]])
+            tmpRes.push([key, Number(result[key])])
         }
         return tmpRes.sort( function (a, b) {
             return b[1] - a[1];

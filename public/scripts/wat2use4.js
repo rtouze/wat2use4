@@ -25,7 +25,7 @@ $(function () {
     var initPage = function (poll) {
         results = poll.results;
         timeline = Model.Timeline(poll.timeline);
-        voteCount = poll.voteCount;
+        voteCount = Number(poll.voteCount);
         question = poll.question;
         $('#question').html(question);
         refreshStatsPlaceHolder(results);
@@ -44,7 +44,6 @@ $(function () {
         adviceDiv  = document.querySelector('div#advice');
         content = adviceDiv.textContent.trim();
         timeline.append(content);
-        console.log(timeline.justAppended());
         renderTimeline(timeline.asList());
 
         result = content.match(/#(\S+)(\s|$|\.)/g);
@@ -59,8 +58,8 @@ $(function () {
                 if (results[currentResult] === undefined) {
                     results[currentResult] = 0;
                 }
-                results[currentResult] += 1;
-                voteCount += 1;
+                results[currentResult] = Number(results[currentResult]) + 1;
+                voteCount = Number(voteCount) + 1;
                 refreshStatsPlaceHolder(results);
             }
         } 
@@ -93,7 +92,6 @@ $(function () {
     };
 
     var refreshStatsPlaceHolder = function (results) {
-        // TODO: write sorted list
         var $placeHolder = $('div#result_place_holder'),
             $resultList = $('<ul>'),
             $currentAdviceElement,
