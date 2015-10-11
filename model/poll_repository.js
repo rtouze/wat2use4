@@ -6,7 +6,7 @@ var mongo = require('mongodb');
 var mongoClient = mongo.MongoClient;
 var ObjectID = mongo.ObjectID;
 var debug = require('debug')('model:poll_repository');
-var localMongoUri = "mongodb://localhost/27017/db";
+var localMongoUri = "mongodb://localhost:27017/db";
 var mongoUri = process.env.MONGOLAB_URI ||
                process.env.MONGOHQ_URL ||
                localMongoUri;
