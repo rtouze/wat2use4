@@ -63,7 +63,7 @@ app.get('/:pollId', function (req, rep) {
         });
     }
     catch(e) {
-        res.send(404, "pollId " + req.params.pollId + " not found (" + e + ").");
+        rep.send(404, "pollId " + req.params.pollId + " not found (" + e + ").");
     }
 });
 
