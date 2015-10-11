@@ -37,6 +37,7 @@ app.post('/poll_submit', function (req, res) {
     debug('I received ' + req.param('question'));
     var poll = {
         question: req.param('question'),
+        creationDate: new Date(),
         timeline: [],
         results: {},
         voteCount: 0

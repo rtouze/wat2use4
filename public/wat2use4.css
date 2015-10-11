@@ -127,6 +127,10 @@ div.button:hover  {
     color: black;
 }
 
+div#question_info {
+    font-size: 0.5em;
+    margin-top: 4em;
+}
 
 
 
