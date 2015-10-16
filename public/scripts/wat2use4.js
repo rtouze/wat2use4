@@ -32,17 +32,17 @@ $(function () {
         renderTimeline(timeline.asList());
     };
 
-    $('div#advice').on('focus', function (event) {
+    $('#advice').on('focus', function (event) {
         var initial_content = 'Type your advice here...';
         if (event.target.textContent.trim() === initial_content) {
             event.target.textContent = '';
         }
     });
 
-    $('div#advice_submit').click(function () {
+    $('#advice_submit').click(function () {
         var advice, content, result, adviceDiv;
-        adviceDiv  = document.querySelector('div#advice');
-        content = adviceDiv.textContent.trim();
+        adviceDiv  = document.querySelector('#advice');
+        content = adviceDiv.value.trim();
         timeline.append(content);
         renderTimeline(timeline.asList());
 
@@ -51,9 +51,9 @@ $(function () {
             var adaptedResult = result.map(
                     function (item) { return item.trim().replace(/(^#|\s|\.)/g, '').toLowerCase(); }
                     );
-            //var i = 0;
             var currentResult;
-            for (var i = 0; i < adaptedResult.length; i++) {
+            var adaptedResultLength = adaptedResult.length;
+            for (var i = 0; i < adaptedResultLength; i++) {
                 currentResult = adaptedResult[i];
                 if (results[currentResult] === undefined) {
                     results[currentResult] = 0;
