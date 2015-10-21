@@ -99,7 +99,7 @@ $(function () {
             sortedResult,
             resultLine;
 
-        sortedResult = Model.resultSorter(results, 5);
+        sortedResult = Model.FiveFirstResultSorter(results);
 
         for (var i in sortedResult) {
             resultLine = sortedResult[i];
@@ -121,8 +121,7 @@ $(function () {
     socket.on('refresh', function (msg) {
         if (!timeline || !timeline.justAppended()) {
             pullData();
-        }
-        else {
+        } else {
             if (timeline) {
                 timeline.toggleAppended();
             }

@@ -1,16 +1,17 @@
 // Mocha test file for lib.js
+;
 
 describe('Timeline', function () {
     it('should reverse on append', function () {
-        var tl = Model.Timeline([]);
-        tl.append('foo');
-        tl.append('bar');
-        tl.asList()[0].content.should.equals('bar');
-    });
-});
+        var tl = Model.Timeline([])
+        tl.append('foo')
+        tl.append('bar')
+        tl.asList()[0].content.should.equals('bar')
+    })
+})
 
 
-describe('resultSorter', function () {
+describe('FiveFirstResultSorter', function () {
     it('should return 5 highest score values', function () {
         var pollResult = {
             'foo': 40,
@@ -19,14 +20,15 @@ describe('resultSorter', function () {
             'toto': 5,
             'tata': 1000,
             'tutu': 1
-        };
-        var newRes = Model.resultSorter(pollResult, 5);
-        var expected = [['tata', 1000],
+        },
+            newRes = Model.FiveFirstResultSorter(pollResult),
+            expected = [['tata', 1000],
             ['bar', 100],
             ['foo', 40],
             ['baz', 10],
-            ['toto', 5]];
-        newRes.should.deep.equals(expected);
+            ['toto', 5]]
+
+        newRes.should.deep.equals(expected)
     });
 });
 
