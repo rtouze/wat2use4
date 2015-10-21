@@ -47,5 +47,11 @@ var Model = {
             return b[1] - a[1];
         })
         .slice(0, returnedCount);
+    },
+
+    statSizer: function (result, voteCount) {
+        min_size = .8
+        size = result*4/voteCount
+        return  (size > min_size ? size : min_size) + 'em';
     }
 };
