@@ -4,10 +4,37 @@
  *  socket.io 1.0
  * */
 
+DEBUG = true;
 
 // Launched on page load
 $(function () {
     'use strict';
+    cleanup_storage();
+    var $advice_submit = $('#advice_submit'),
+        $advice = $('#advice');
+
+    function cleanup_storage() {
+        if (!window.localStorage) {
+            return;
+        }
+        var STORAGE_TTL = DEBUG ? 0 : 86400000,  // day of TTL for localstorage keys
+            storageLength = window.localStorage.length,
+            key, stringVal, i;
+
+        for (i = 0; i < storageLength; i += 1) {
+            key = window.localStorage.key(i);
+            stringVal = window.localStorage.getItem(key) || '0';
+            if (stringVal === 'undefined' || stringVal === '0') {
+                window.localStorage.removeItem(key);
+                continue
+            }
+            if (+ new Date - STORAGE_TTL > JSON.parse(stringVal).creation) {
+                window.localStorage.removeItem(key);
+            }
+        }
+    }
+
+
     var pollId = window.location.pathname.substr(1);
     var socket = io();
 
@@ -32,17 +59,28 @@ $(function () {
         renderTimeline(timeline.asList());
     };
 
-    $('#advice').on('focus', function (event) {
-        var initial_content = 'Type your advice here...';
-        if (event.target.textContent.trim() === initial_content) {
-            event.target.textContent = '';
+    $advice.on('focus', function (event) {
+        var initial_content = '# should prefix the terms you vote for.';
+        if (event.target.value.trim() === initial_content) {
+            event.target.value = '';
         }
     });
 
-    $('#advice_submit').click(function () {
-        var advice, content, result, adviceDiv;
-        adviceDiv  = document.querySelector('#advice');
-        content = adviceDiv.value.trim();
+    $advice_submit.click(function (evt) {
+        var content, result, session;
+
+        if(window.localStorage) {
+            session = JSON.parse(window.localStorage.getItem(pollId) || '0');
+            if (session && session.answered) {
+                $(evt.target).attr('disabled', 'disabled');
+                return;
+            }
+        }
+        else return;
+        $(evt.target).removeAttr('disabled');
+
+
+        content = $advice.val().trim();
         timeline.append(content);
         renderTimeline(timeline.asList());
 
@@ -77,6 +115,15 @@ $(function () {
             url: '/' + pollId + '/update',
             data: {'poll': pollChange}
         });
+
+        // Update localStorage
+        if (window.localStorage) {
+            localStorage.setItem(
+                pollId,
+                JSON.stringify({creation: +new Date, answered: true})
+            );
+            $advice.parent().html('Thank you for your advice!<br /><br />Here are the 10 last advices:');
+        }
     });
 
     var renderTimeline = function (timelineAsList) {
@@ -114,6 +161,7 @@ $(function () {
     // Main exec part
     pullData();
 
+    // socket events
     socket.on('ok', function () {
         socket.emit("joinPoll", {id: pollId});
     });

@@ -65,9 +65,9 @@ div#main_placeholder {
 div#results {
   float: right;
   border: 1px grey solid;
-  padding: 1em;
+  padding: .5em;
   margin-right: 2%;
-  width: 20%;
+  width: 23%;
   height: 10em;
 }
 
@@ -118,6 +118,7 @@ div.tl_advice > em
 
 ul {
     list-style-type: none;
+    padding-left: 0;
 }
 
 button {
@@ -137,6 +138,11 @@ button:hover  {
     background: lightgrey;
     cursor: pointer;
     color: black;
+}
+
+button:disabled {
+    background: lightgrey;
+    color: grey;
 }
 
 button:focus  {
